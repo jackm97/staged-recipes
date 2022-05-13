@@ -1,0 +1,78 @@
+{% set name = "pyoptsparse-win64" %}
+{% set version = "2.8.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jackm97/pyoptsparse/archive/refs/tags/win64_v{{ version }}.tar.gz
+  sha256: b262161bd5f2c56ded92808074421dd12349e9d6e4cbdaa2ccac3ad47e7a69f4
+
+build:
+  number: 0
+  skip: true  # [win and vc<17]
+  skip: true  # [win and py<39]
+  skip: true  # [python_impl == 'pypy']
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - python
+    - numpy
+    - meson >=0.46
+    - swig
+
+  host:
+    - python
+    - numpy >=1.21,<2.0
+    - pkg-config
+    - openblas
+    - libpgmath     # [win]
+    - ipopt >3.11
+
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - sqlitedict >=1.6
+    - scipy >1.2
+    - mdolab-baseclasses >=1.3.1
+
+test:
+  imports:
+    - pyoptsparse
+
+  source_files:
+    - tests
+
+  requires:
+    - pip
+    - testflo
+    - parameterized
+
+  commands:
+    - testflo -n 1 --verbose .
+    - pip check
+
+about:
+  home: https://mdolab-pyoptsparse.readthedocs-hosted.com/
+  license: LGPL-3.0-only
+  license_family: LGPL
+  license_file: LICENSE
+  summary: Package for formulating and solving nonlinear constrained optimization problems.
+  description: |
+    pyOptSparse is an object-oriented framework for formulating and solving
+    nonlinear constrained optimization problems in an efficient, reusable, and
+    portable manner. It is a fork of pyOpt that uses sparse matrices throughout
+    the code to more efficiently handle large-scale optimization problems.
+    Interfaces are provided for a number of optimizers -- for the conda package the optimizers
+    ALPSO, CONMIN, IPOPT, NSGA2, PSQP, and SLSQP are supported.    
+    This is specifically a forked version for windows!
+  doc_url: https://mdolab-pyoptsparse.readthedocs-hosted.com/
+  dev_url: https://github.com/jackm97/pyoptsparse
+
+extra:
+  recipe-maintainers:
+    - jackm97
